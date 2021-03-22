@@ -1,0 +1,147 @@
+openapi: 3.0.0
+info:
+  description: Inditext Product info service
+  version: "1.0.0-SNAPSHOT"
+  title: Product API
+servers:
+  - url: 'http://localhost:8080'
+    description: API url
+
+paths:
+  /products/{productId}:
+    get:
+      tags:
+        - Products
+      summary: "GET products and price info"
+      operationId: getProduct
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: brandId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date-time
+      responses:
+        200:
+          description: "Product retrieved successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - productId
+                      - brandId
+                      - priceList
+                      - dateRange
+                      - amount
+                    properties:
+                      productId:
+                        type: string
+                        example: '1234'
+                      brandId:
+                        type: string
+                        example: '1'
+                      priceList:
+                        type: string
+                        example: '1'
+                      dateRange:
+                        type: object
+                        required:
+                          - startDate
+                          - endDate
+                        properties:
+                          startDate:
+                            type: string
+                            format: date-time
+                            example: '2021-03-22T02:16:02Z'
+                          endDate:
+                            type: string
+                            format: date-time
+                            example: '2021-03-22T02:16:02Z'
+                      amount:
+                        type: object
+                        required:
+                          - amount
+                          - currency
+                        properties:
+                          amount:
+                            type: string
+                            example: '25.58'
+                          currency:
+                            type: string
+                            example: 'EUR'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+              examples:
+                DD002:
+                  summary: An example of 400 error
+                  value:
+                    error:
+                      message: Parameters are not valid
+                      code: BR001
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+              examples:
+                DD001:
+                  summary: An example of 404 error
+                  value:
+                    error:
+                      message: Product not found
+                      code: P001
+        '500':
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericError'
+              examples:
+                G500:
+                  summary: An example of 500 error
+                  value:
+                    error:
+                      message: Something went wrong
+                      code: G500
+
+components:
+  schemas:
+    GenericError:
+      type: object
+      properties:
+        error:
+          type: object
+          required:
+            - message
+            - code
+          properties:
+            message:
+              type: string
+            code:
+              type: string
+
+
+tags:
+  - name: Products
+    description: Products operations
